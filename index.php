@@ -56,12 +56,12 @@ curl_close($curl);
 if ($status['http_code']=='403'||$status['http_code']=='500'||$status['http_code']=='501')
 	{
 	echo $curl_response;
-	$IsLoadCollection=false;
+
 	}
 	else{ 
 		if ($status['http_code']=='404')
 		{
-		$IsLoadCollection=false;
+
 		if ($Admin)
 			echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Cargar coleccion al sistema de OAI-PMH\">";
 		}
@@ -70,10 +70,22 @@ if ($status['http_code']=='403'||$status['http_code']=='500'||$status['http_code
 			{
 			echo "<p> Fecha de la ultima actualizacion o carga : ".$curl_response."</p>";
 			}
-			
-			$IsLoadCollection=true;
+
 			if ($Admin)
-				echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH\">";
+			{
+					$fileName = 'save/ultima.json';
+					if ( file_exists($fileName) && ($fp = fopen($fileName, "rb"))!==false ) {
+					echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'load2.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH - CON CONFIGURACION ANTIGUA \">";
+					echo "<br>";
+					echo "<br>";
+					echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH - CON CONFIGURACION NUEVA\">";
+
+					fclose($fp);
+					}
+					else {
+						echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH\">";
+					}
+			}
 			}
 		}
 	

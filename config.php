@@ -1,7 +1,7 @@
 <?php
 define('Clavyuser','gayoxo@gmail.com');
 define('Clavyuserkey','ClaW1538457');
-define('Clavykey','111');
+define('Clavykey','37927558757509');
 define('ClavyServer','localhost');
 define('ClavyPort','8080');
 define('ClavyDomine','Clavy');
@@ -9,7 +9,6 @@ define('ClavyDomine','Clavy');
 define('TZN_ODA_HOST','localhost');
 
 define('TZN_DB_EXTERNAL_HOST','localhost');
-
 define('TZN_DB_EXTERNAL_USER','ilsaserver');       // Nombre del usuario de la base de datos
 define('TZN_DB_EXTERNAL_PASS','platano');           // Contraseña del usuario de la base de datos
 

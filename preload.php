@@ -40,8 +40,13 @@ while($row = mysql_fetch_array($result)) {
 		else
 		{
 			echo "<li>";
+			if ($row["id"]=="111")
+				echo $Descipcion. " = dc:description";
+			else
+			{
 			echo $Descipcion. " = ";
 			ComboDC($row["id"]);
+			}
 			//echo "<li>  <input type=\"checkbox\" name=\"estructura[]\" value=\"".$row["id"]."\"> ".$Descipcion;
 		}
 	  echo "<ul>";
@@ -111,17 +116,76 @@ else
 	
 	
 echo "<form id=\"formdata\" name=\"formdata\" action=\"load.php\" method=\"POST\">";
+
+
+
+echo "<br>";
+echo "<p><b>Estructuras </b></p>"; 
+
+
 $link=Conectarse(); 
  
    funcionCompleta(0,$link,true);
    
   
  mysql_close($link); 
- 
 
+ 
+if ($Admin)
+   $result=mysql_query("SELECT A.id, B.value FROM virtual_object AS A, text_data AS B WHERE A.id=B.idov AND B.idseccion=111 ORDER BY A.id",$link); 
+else if ($User)
+	$result=mysql_query("SELECT A.id, B.value FROM virtual_object AS A, text_data AS B WHERE A.id=B.idov AND B.idseccion=111 AND A.ispublic='S' ORDER BY A.id",$link); 
+else
+	{
+	$result2=mysql_query("SELECT idov FROM permisos WHERE idusuario=".$id,$link); 
+	$finalStruc="";
+   $coma=false;
+   while($row = mysql_fetch_array($result2)) {
+	   $ValueIdov=$row["idov"];
+		if ($coma)
+			$finalStruc=$finalStruc.',';
+		else $coma=true;			
+		
+		$finalStruc=$finalStruc.$ValueIdov;
+   
+   }
+   
+   if (!empty($finalStruc))
+	$result=mysql_query("SELECT A.id, B.value FROM virtual_object AS A, text_data AS B WHERE A.id=B.idov AND B.idseccion=111 AND (A.id IN (".$finalStruc.") OR A.ispublic='S') ORDER BY A.id",$link); 
+	else
+		$result=mysql_query("SELECT A.id, B.value FROM virtual_object AS A, text_data AS B WHERE A.id=B.idov AND B.idseccion=111 AND A.ispublic='S' ORDER BY A.id",$link); 
+	
+
+	}
+
+	
+echo "<br>";
+echo "<br>";
+echo "<p><b>Documentos</b></p>"; 
+	
+	
+	echo '<button type="button" onClick="checkAll(\'document[]\', true);" >Seleccionar todo</button>';
+echo '&nbsp;&nbsp;';
+echo '<button type="button" onClick="checkAll(\'document[]\', false);" >Deseleccionar todo</button>';
+echo '<br>';
+  
+while($row = mysql_fetch_array($result)) {
+		if (strlen($row["value"])>62)
+			$Descipcion=utf8_encode(substr (utf8_decode($row["value"]),0,60)."...");
+		else
+			$Descipcion=$row["value"];
+		
+		$Descipcion=utf8_encode(strip_tags(utf8_decode($Descipcion))); 
+	  echo "<input type=\"checkbox\" name=\"document[]\" value=\"".$row["id"]."\"> ".$row["id"]." : ".$Descipcion."<br>";
+     // printf("<tr><td>&nbsp;%s</td><td>&nbsp;%s&nbsp;</td></tr>", $row["id"],$row["value"]); 
+   }
+mysql_free_result($result); 
+
+echo "<br>";
+echo "<br>";	
+	
 echo "<input type=\"button\" onclick=\"preUpload();\" id=\"submitButton\" value=\"Actualiza/Carga OAI-PMH\" name=\"Actualiza/Carga OAI-PMH\" >";
 echo "</form>";
-
 
 ?>
 

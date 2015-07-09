@@ -11,35 +11,21 @@ include_once("config.php");
 <?php
 
 
-$Data=$_POST["selCombo"];
-
-$Data2=$_POST["document"];
-
-$DataJSon=array();
-
-$DataOAI=array();
-
-$DataDocu=array();
-
-foreach ($Data as $key=>$valor)
-{
-	if (!empty($key)&&!empty($valor))
-		$DataOAI[$key]=$valor;
+$fileName = 'save/ultima.json';
+if ( file_exists($fileName) && ($fp = fopen($fileName, "rb"))!==false ) {
+		$DataJSonDec= fgets($fp);
+		 fclose($fp);
+		 echo '<meta http-equiv="Refresh" content="5;url=loadProcess.php?JsonCode='.urlencode($DataJSonDec).'">';
 }
-
-foreach ($Data2 as $key=>$valor)
-{
-	if (!empty($key)&&!empty($valor))
-		$DataDocu[$key]=$valor;
-}
-
-$DataJSon["Documents"]=$DataDocu;
-$DataJSon["OAI"]=$DataOAI;
+else {
+		echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH\">";
+		echo '<meta http-equiv="Refresh" content="5;url=load.php">';
+	}
 
 $DataJSonDec=json_encode($DataJSon);
 
 
-echo '<meta http-equiv="Refresh" content="5;url=loadProcess.php?JsonCode='.urlencode($DataJSonDec).'">';
+
 echo "<br>";
 echo '<div align="center">
  <p>Carga en proceso, por favor espere</p>
