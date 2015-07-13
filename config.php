@@ -18,6 +18,8 @@ define('TZN_DB_EXTERNAL_DESTINY_BASE','oaicatciberia');
 define('TZN_DB_EXTERNAL_DESTINY_USER','ilsaserver');       // Nombre del usuario de la base de datos
 define('TZN_DB_EXTERNAL_DESTINY_PASS','platano');           // Contraseña del usuario de la base de datos
 
+
+
 set_time_limit(0);
 ?>
 
