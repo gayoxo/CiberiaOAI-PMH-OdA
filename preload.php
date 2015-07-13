@@ -25,9 +25,10 @@ function Conectarse()
    return $link; 
 }
 
-function funcionCompleta($idpadre,$link,$inicial) 
+function funcionCompleta($idpadre,$link,$inicial,$TabklaIds) 
 { 
-$result=mysql_query("SELECT id, nombre FROM section_data WHERE idpadre=".$idpadre." ORDER BY id",$link);
+
+$result=mysql_query("SELECT id, nombre, tipo_valores FROM section_data WHERE idpadre=".$idpadre." ORDER BY id",$link);
 while($row = mysql_fetch_array($result)) {
 		if (strlen($row["nombre"])>62)
 			$Descipcion=utf8_encode(substr (utf8_decode($row["nombre"]),0,60)."...");
@@ -44,13 +45,17 @@ while($row = mysql_fetch_array($result)) {
 				echo $Descipcion. " = dc:description";
 			else
 			{
-			echo $Descipcion. " = ";
-			ComboDC($row["id"]);
+				echo $Descipcion;
+			if (!is_null($row["tipo_valores"])&&$row["tipo_valores"]!="X")	
+				{
+				echo " = ";
+				ComboDC($row["id"],$TabklaIds);
+				}
 			}
 			//echo "<li>  <input type=\"checkbox\" name=\"estructura[]\" value=\"".$row["id"]."\"> ".$Descipcion;
 		}
 	  echo "<ul>";
-	  funcionCompleta($row["id"],$link,false); 
+	  funcionCompleta($row["id"],$link,false,$TabklaIds); 
 	  echo "</ul></li>";
      // printf("<tr><td>&nbsp;%s</td><td>&nbsp;%s&nbsp;</td></tr>", $row["id"],$row["value"]); 
    }
@@ -58,25 +63,66 @@ mysql_free_result($result);
 }
 
 
-function ComboDC($idrow)
+function ComboDC($idrow,$TabklaIds)
 {
+	
+	$Select=$TabklaIds[$idrow];
+	
+	/*if (!is_null($Select))
+		var_dump($Select);*/
+	
 	echo "<SELECT NAME=\"selCombo[".$idrow."]\" >"; 
 	echo "<OPTION VALUE=\"\"></OPTION>";
-	echo "<OPTION VALUE=\"dc:title\">dc:title</OPTION>";
-	echo "<OPTION VALUE=\"dc:creator\">dc:creator</OPTION>";
-	echo "<OPTION VALUE=\"dc:contributor\">dc:contributor</OPTION>";
-	echo "<OPTION VALUE=\"dc:date\">dc:date</OPTION>";
-	echo "<OPTION VALUE=\"dc:language\">dc:language</OPTION>";
-	echo "<OPTION VALUE=\"dc:publisher\">dc:publisher</OPTION>";
+	
+	$array = array("dc:title", "dc:creator","dc:contributor","dc:date","dc:language","dc:publisher","dc:relation","dc:format","dc:type","dc:description","dc:identifier","dc:source","dc:subject","dc:coverage","dc:rights");
+	foreach ($array as $valor)
+	{
+		echo "<OPTION VALUE=\"".$valor."\"";
+		if (!is_null($Select)&&$valor==$Select)
+			echo "selected";
+		echo ">".$valor."</OPTION>";
+	}	
+	
+	
+	
+	/*echo "<OPTION VALUE=\"dc:title\"";
+	echo ">dc:title</OPTION>";
+	
+	echo "<OPTION VALUE=\"dc:creator\"";
+	echo ">dc:creator</OPTION>";
+	
+	echo "<OPTION VALUE=\"dc:contributor\"";
+	echo ">dc:contributor</OPTION>";
+	
+	echo "<OPTION VALUE=\"dc:date\"";
+	echo ">dc:date</OPTION>";
+	
+	echo "<OPTION VALUE=\"dc:language\"";
+	echo ">dc:language</OPTION>";
+	
+	echo "<OPTION VALUE=\"dc:publisher\"";
+	echo ">dc:publisher</OPTION>";
+
 	echo "<OPTION VALUE=\"dc:relation\">dc:relation</OPTION>";
+
 	echo "<OPTION VALUE=\"dc:format\">dc:format</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:type\">dc:type</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:description\">dc:description</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:identifier\">dc:identifier</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:source\">dc:source</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:subject\">dc:subject</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:coverage\">dc:coverage</OPTION>";
+	
 	echo "<OPTION VALUE=\"dc:rights\">dc:rights</OPTION>";
+	*/
+	
+	
 	echo "</SELECT>"; 
 }
 
@@ -100,7 +146,45 @@ function checkAll(formname, checktoggle)
 
 <?php
 	
+	
 
+
+try{
+
+   $fileName = 'save/ultima.json';
+if ( file_exists($fileName) && ($fp = fopen($fileName, "rb"))!==false ) {
+		$DataJSonDec= fgets($fp);
+		 fclose($fp);
+		 $DataDec=json_decode($DataJSonDec, true);
+		 
+		 
+		 $CamposData=$DataDec["OAI"];
+		
+		 $CamposDoc=$DataDec["Documents"];
+			
+		$CamposDoc2=array();	
+			
+			foreach ($CamposDoc as $esta )
+				$CamposDoc2[$esta]="true";
+
+		/* var_dump($CamposData);
+		  echo "<br>";
+		 var_dump($CamposDoc);
+		  echo "<br>";
+		 var_dump($CamposDoc2);*/
+		 
+}
+
+}
+
+catch(Exception $e){
+
+   echo $e->getMessage();
+
+}
+	
+	
+	
 $id=$visit->options->usuario->id;
 $rol=$visit->options->usuario->rol;
 
@@ -125,10 +209,10 @@ echo "<p><b>Estructuras </b></p>";
 
 $link=Conectarse(); 
  
-   funcionCompleta(0,$link,true);
+   funcionCompleta(0,$link,true,$CamposData);
    
   
- mysql_close($link); 
+
 
  
 if ($Admin)
@@ -176,10 +260,26 @@ while($row = mysql_fetch_array($result)) {
 			$Descipcion=$row["value"];
 		
 		$Descipcion=utf8_encode(strip_tags(utf8_decode($Descipcion))); 
-	  echo "<input type=\"checkbox\" name=\"document[]\" value=\"".$row["id"]."\"> ".$row["id"]." : ".$Descipcion."<br>";
+		
+		
+		$Select=$CamposDoc2[$row["id"]];
+	  
+	/*  var_dump ($Select);*/
+	  
+		
+	  echo "<input type=\"checkbox\" name=\"document[]\" value=\"".$row["id"]."\"";
+	  
+	  
+	  if (!is_null($Select))
+		echo " checked ";
+	  
+	  echo "> ".$row["id"]." : ".$Descipcion."<br>";
      // printf("<tr><td>&nbsp;%s</td><td>&nbsp;%s&nbsp;</td></tr>", $row["id"],$row["value"]); 
    }
 mysql_free_result($result); 
+
+
+ mysql_close($link); 
 
 echo "<br>";
 echo "<br>";	

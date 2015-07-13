@@ -75,10 +75,8 @@ if ($status['http_code']=='403'||$status['http_code']=='500'||$status['http_code
 			{
 					$fileName = 'save/ultima.json';
 					if ( file_exists($fileName) && ($fp = fopen($fileName, "rb"))!==false ) {
-					echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'load2.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH - CON CONFIGURACION ANTIGUA \">";
 					echo "<br>";
-					echo "<br>";
-					echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH - CON CONFIGURACION NUEVA\">";
+					echo "<input type=\"button\" id=\"importB\" name=Import1 onclick=\"document.location.href= 'preload.php';\" value=\"Actualizar de nuevo la coleccion al sistema OAI-PMH \">";
 
 					fclose($fp);
 					}
